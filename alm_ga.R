@@ -203,7 +203,7 @@ N_iter <- 100 # quantidade de iterações simulações
 Tam <- 12  # período anual
 A0 <- 10000000 # Valor inicial do Ativo - colocar no mínimo o valor da RM0
 #iv_r <- 0.06
-FC_r <- c(7000, 9000, 11000, 11000, 8500, 10000, 9090, 12123, 10000, 9000, 8000, 1000) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
+FC_r <- c(10000, 9000, 11000, 11000, 8500, 10000, 9090, 12123, 10000, 9000, 8000, 1000) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
 RM_r_1 <- 9500000
 RM_r <- A0
 dif <- A0 - RM_r_1 
@@ -293,6 +293,8 @@ COR_Chol <- chol(COR) # Decomposição de Cholesky
 arrayteste <- array(NA, dim = c(12, 5, N_iter), dimnames = list(linhameses, colnames(Retorno[-1])))
 iter <- 1
 Inad <- rep(0, N_iter)
+# selecionando a seed para reproduzir
+set.seed(1)
 repeat{
   for (i in seq(1,12)){
     vetorRandn <- rnorm(5)
@@ -359,31 +361,45 @@ repeat{
   return(- prob_insolv - sum(penalizacao))
 }
 ########## COLOQUEI NEGATIVA A PROB DE INSOLVÊNCIA PARA TENTAR MAXIMIZAR PELOS GA
+
 # Testando com pesos somados = 1
 X <- rep(0.2, 60)
 obj <- ALM(X)
 obj
+
 # Testando com pesos somados != 1
 X <- rep(0.262, 60)
 obj <- ALM(X)
 obj
+
 # Testando com pesos somados = 1 apenas no arrendodamento - o arrendodamento serviu para ver se a combinação de pop gerada consegue convergir para 1.
-X <- rep(0.21, 60)
+X <- rep(0.23, 60)
+obj <- ALM(X)
+obj
+
+X <- rep(0, 60)
+obj <- ALM(X)
+obj
+
+X <- rep(0.1, 60)
+obj <- ALM(X)
+obj
+
+X <- c(rep(0.2,36),rep(0.1, 24))
 obj <- ALM(X)
 obj
 ##### OK
 
 ############## Algoritmos Genéticos ##############
-
 ### gerando a sugestão
-X <- rep(0.2, 60)
+X <- c(rep(0.2,36),rep(0.1, 24))
 
 ### Implementando o algoritmo genético com o mínimo e o máximo de alocação para cada ativo
 # máximo de iterações = 10 e tamanho da população = 600
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-         upper = rep(c(1, 1, 1, 0.3, 0.3), each =  12), suggestions = X, popSize = 1200, 
-         maxiter = 2, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+         upper = rep(c(0.9, 0.3, 0.3, 0.1, 0.1), each =  12), popSize = 600, 
+         maxiter = 10, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
          keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
@@ -392,8 +408,67 @@ otimizando@solution
 otimizando@fitnessValue
 otimizando@population
 plot(otimizando)
-plot.ga(otimizando)
+plot(otimizando, log = "x")
 otimizando@solution
+# escrevendo resultados em .csv
+solucao <- matrix(otimizando@solution, nrow = 12, byrow = FALSE)
+colnames(solucao) <- names(Retorno[,-1])
+linhameses <- c("jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez")
+rownames(solucao) <- linhameses
+solucao
+apply(round(solucao,1), 1, sum)
+write(solucao, file = "solucao.csv")
+
+## Testando com apenas dois ativos
+otimizando <- ga(type = "real-valued", fitness = ALM, 
+                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
+                 upper = rep(c(1, 0, 0, 0.3, 0), each =  12), popSize = 120, 
+                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+                 keepBest = TRUE, seed=12345)
+
+# apresentando os resultados 
+summary(otimizando)
+otimizando@solution
+otimizando@fitnessValue
+otimizando@population
+#plot(otimizando)
+#plot.ga(otimizando)
+otimizando@solution
+
+## Testando com apenas 3 ativos
+otimizando <- ga(type = "real-valued", fitness = ALM, 
+                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
+                 upper = rep(c(1, 0.3, 0, 0.3, 0), each =  12), popSize = 120, 
+                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+                 keepBest = TRUE, seed=12345)
+
+# apresentando os resultados 
+summary(otimizando)
+otimizando@solution
+otimizando@fitnessValue
+otimizando@population
+#plot(otimizando)
+#plot.ga(otimizando)
+otimizando@solution
+
+# Otimizando com 4 ativos
+otimizando <- ga(type = "real-valued", fitness = ALM, 
+                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
+                 upper = rep(c(0.7, 0.4, 0.3, 0.3, 0), each =  12), popSize = 120, 
+                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+                 keepBest = TRUE, seed=12345)
+
+# apresentando os resultados 
+summary(otimizando)
+otimizando@solution
+otimizando@fitnessValue
+otimizando@population
+#plot(otimizando)
+#plot.ga(otimizando)
+otimizando@solution
+
+
+
 
 ################ Resultados e Gráficos ###################
 
@@ -431,7 +506,7 @@ COR_Chol <- chol(COR)
 arrayteste <- array(NA, dim = c(12, 5, 100), dimnames = list(linhameses, colnames(Retorno[-1])))
 
 # selecionando uma seed para manter a reprodutibilidade
-set.seed(5)
+set.seed(1)
 
 # Simulação de Monte Carlo n=100
 for(j in seq(1,100)){
