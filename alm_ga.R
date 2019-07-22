@@ -130,7 +130,7 @@ Fundos_stats %>%
   scale_y_continuous(limits = c(0, 0.02)) +
   scale_x_continuous(limits = c(0, 0.07))
 
-ggplot(matriz_medias_dp, aes(x = vetor_dp, y = vetor_medias, color = colunas)) +
+ggplot(matriz_medias_dp, aes(x = vetor_dp, y = vetor_medias, color = Ativos)) +
   geom_point(size = 5) +
   theme_bw() + ggtitle("Risco-Retorno") +
   xlab("Volatilidade") + ylab("Retorno") +
@@ -392,14 +392,14 @@ obj
 
 ############## Algoritmos Genéticos ##############
 ### gerando a sugestão
-X <- c(rep(0.2,36),rep(0.1, 24))
+#X <- c(rep(0.2,36),rep(0.1, 24))
 
 ### Implementando o algoritmo genético com o mínimo e o máximo de alocação para cada ativo
 # máximo de iterações = 10 e tamanho da população = 600
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-         upper = rep(c(0.9, 0.3, 0.3, 0.1, 0.1), each =  12), popSize = 600, 
-         maxiter = 10, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+         upper = rep(c(0.7, 0.4, 0.3, 0.1, 0.1), each =  12), popSize = 1200, 
+         maxiter = 20, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
          keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
@@ -411,45 +411,45 @@ plot(otimizando)
 plot(otimizando, log = "x")
 otimizando@solution
 # escrevendo resultados em .csv
-solucao <- matrix(otimizando@solution, nrow = 12, byrow = FALSE)
-colnames(solucao) <- names(Retorno[,-1])
-linhameses <- c("jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez")
-rownames(solucao) <- linhameses
-solucao
-apply(round(solucao,1), 1, sum)
+#solucao <- matrix(otimizando@solution, nrow = 12, byrow = TRUE)
+#colnames(solucao) <- names(Retorno[,-1])
+#linhameses <- c("jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez")
+#rownames(solucao) <- linhameses
+#solucao
+#apply(round(solucao,1), 1, sum)
 write(solucao, file = "solucao.csv")
 
 ## Testando com apenas dois ativos
-otimizando <- ga(type = "real-valued", fitness = ALM, 
-                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-                 upper = rep(c(1, 0, 0, 0.3, 0), each =  12), popSize = 120, 
-                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
-                 keepBest = TRUE, seed=12345)
+#otimizando <- ga(type = "real-valued", fitness = ALM, 
+#                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
+#                 upper = rep(c(1, 0, 0, 0.3, 0), each =  12), popSize = 120, 
+#                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+#                 keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
-summary(otimizando)
-otimizando@solution
-otimizando@fitnessValue
-otimizando@population
+#summary(otimizando)
+#otimizando@solution
+#otimizando@fitnessValue
+#otimizando@population
 #plot(otimizando)
 #plot.ga(otimizando)
-otimizando@solution
+#otimizando@solution
 
 ## Testando com apenas 3 ativos
-otimizando <- ga(type = "real-valued", fitness = ALM, 
-                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-                 upper = rep(c(1, 0.3, 0, 0.3, 0), each =  12), popSize = 120, 
-                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
-                 keepBest = TRUE, seed=12345)
+#otimizando <- ga(type = "real-valued", fitness = ALM, 
+#                 lower = rep(c(0, 0, 0, 0, 0), each = 12), 
+#                 upper = rep(c(1, 0.3, 0, 0.3, 0), each =  12), popSize = 120, 
+#                 maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+#                 keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
-summary(otimizando)
-otimizando@solution
-otimizando@fitnessValue
-otimizando@population
+#summary(otimizando)
+#otimizando@solution
+#otimizando@fitnessValue
+#otimizando@population
 #plot(otimizando)
 #plot.ga(otimizando)
-otimizando@solution
+#otimizando@solution
 
 # Otimizando com 4 ativos
 otimizando <- ga(type = "real-valued", fitness = ALM, 
@@ -484,7 +484,7 @@ matriz_medias_dp <- cbind(Ativos = colnames(Retorno[-1]), matriz_medias_dp)
 matriz_medias_dp
 
 ## Gráfico de dispersão em que o eixo X representa a Volatilidade (desvio-padrão) e o eixo Y representa o Retorno
-ggplot(matriz_medias_dp, aes(x = vetor_dp, y = vetor_medias, color = colunas)) +
+ggplot(matriz_medias_dp, aes(x = vetor_dp, y = vetor_medias, color = Ativos)) +
   geom_point(size = 5) +
   # Miscellaneous Formatting
   theme_bw() + ggtitle("Risco x Retorno") +
@@ -541,7 +541,10 @@ print(R)
 
 
 # Matriz com os pesos otimizados pelo Algoritmos Genéticos com o objetivo de reduzir a Probabilidade de Insolvência (Ruína)
-X <- otimizando@solution[1,]
+
+X <- read.csv("solucao.csv", sep = "", header = F)
+print(X)
+#X <- otimizando@solution[1,]
 
 # Matriz com os pesos iguais 
 X0_2 <- rep(0.2, 60)
@@ -606,7 +609,7 @@ Ret_Carteiras %>%
 tabela <- as.data.frame(R)
 tabela
 rownames(tabela) <- NULL
-colnames(tabela) <- colunas
+colnames(tabela) <- names(Retorno[,-1])
 tabela <- cbind(mes = linhameses, tabela)
 str(tabela)
 tabela
