@@ -398,7 +398,7 @@ obj
 # máximo de iterações = 10 e tamanho da população = 600
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-         upper = rep(c(0.7, 0.4, 0.3, 0.1, 0.1), each =  12), popSize = 1200, 
+         upper = rep(c(0.7, 0.5, 0.3, 0.2, 0.2), each =  12), popSize = 1200, 
          maxiter = 20, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
          keepBest = TRUE, seed=12345)
 
