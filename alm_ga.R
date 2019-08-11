@@ -198,19 +198,17 @@ Retorno_Acumulado_long %>%
 # Função objetivo para minimizar a probabilidade de ruína
 ALM <- function(X){
 
-# Parâmetros
 N_iter <- 100 # quantidade de iterações simulações
 Tam <- 12  # período anual
-A0 <- 10000000 # Valor inicial do Ativo - colocar no mínimo o valor da RM0
-#iv_r <- 0.06
-FC_r <- c(10000, 9000, 11000, 11000, 8500, 10000, 9090, 12123, 10000, 9000, 8000, 1000) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
-RM_r_1 <- 9500000
+A0 <- 200304847 # Valor inicial do Ativo - colocar no mínimo o valor da RM0
+FC_r <- c(-103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
+RM_r_1 <- 227907246
 RM_r <- A0
-dif <- A0 - RM_r_1 
-vet <- rep(dif/12, 12) # teste
+dif <- RM_r_1 - A0
+vet <- rep(dif/12, 13) # teste
 vet[1] <- A0
 RM_r <- cumsum(vet) # Reserva Matemática dos FC_r
-
+  
 ## Calculo do período (em meses) em que a carteira é revista
 # como o tamanho do vetor 60, temos 12 ponderações e dividimos por 5 (quantidade de ativos)
 #Xativo1 <- X[,1]
