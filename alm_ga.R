@@ -198,10 +198,10 @@ Retorno_Acumulado_long %>%
 # Função objetivo para minimizar a probabilidade de ruína
 ALM <- function(X){
 
-N_iter <- 100 # quantidade de iterações simulações
+N_iter <- 1000 # quantidade de iterações simulações
 Tam <- 12  # período anual
 A0 <- 200304847 # Valor inicial do Ativo - colocar no mínimo o valor da RM0
-FC_r <- c(-103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284, -103284) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
+FC_r <- c(72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
 RM_r_1 <- 227907246
 RM_r <- A0
 dif <- RM_r_1 - A0
@@ -269,7 +269,7 @@ for(t in seq(2,Tam)){
   Xativo5[t] <- X[v]
 }
 
-X <- round(cbind(Xativo1, Xativo2, Xativo3, Xativo4, Xativo5), 1) # arredondei para convergir
+X <- round(cbind(Xativo1, Xativo2, Xativo3, Xativo4, Xativo5), 2) # arredondei para convergir
 #X <- matrix(X, ncol = 5, nrow = 12, byrow = TRUE)
 linhameses <- c("jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez")
 rownames(X) <- linhameses
@@ -371,7 +371,7 @@ obj <- ALM(X)
 obj
 
 # Testando com pesos somados = 1 apenas no arrendodamento - o arrendodamento serviu para ver se a combinação de pop gerada consegue convergir para 1.
-X <- rep(0.23, 60)
+X <- rep(0.5, 60)
 obj <- ALM(X)
 obj
 
@@ -388,6 +388,14 @@ obj <- ALM(X)
 obj
 ##### OK
 
+
+# simulações de carteiras ingênuas
+x1 <- rep(c(1,0,0,0,0), each = 12)
+ALM(x1)
+x2 <- rep(c(0.5,0.5,0,0,0), each = 12)
+ALM(x2)
+
+
 ############## Algoritmos Genéticos ##############
 ### gerando a sugestão
 #X <- c(rep(0.2,36),rep(0.1, 24))
@@ -396,8 +404,8 @@ obj
 # máximo de iterações = 10 e tamanho da população = 600
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-         upper = rep(c(0.7, 0.5, 0.3, 0.2, 0.2), each =  12), popSize = 1200, 
-         maxiter = 20, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+         upper = rep(c(1, 0.6, 0.4, 0.2, 0.1), each =  12), popSize = 200, 
+         maxiter = 10, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
          keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
@@ -408,6 +416,11 @@ otimizando@population
 plot(otimizando)
 plot(otimizando, log = "x")
 otimizando@solution
+
+x <- otimizando@solution 
+obj <- ALM(x)
+obj
+
 # escrevendo resultados em .csv
 #solucao <- matrix(otimizando@solution, nrow = 12, byrow = TRUE)
 #colnames(solucao) <- names(Retorno[,-1])
@@ -452,7 +465,7 @@ write(solucao, file = "solucao.csv")
 # Otimizando com 4 ativos
 otimizando <- ga(type = "real-valued", fitness = ALM, 
                  lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-                 upper = rep(c(0.7, 0.4, 0.3, 0.3, 0), each =  12), popSize = 120, 
+                 upper = rep(c(1, 0.6, 0.4, 0.2, 0.1), each =  12), popSize = 120, 
                  maxiter = 1, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
                  keepBest = TRUE, seed=12345)
 
