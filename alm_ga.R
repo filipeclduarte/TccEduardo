@@ -201,9 +201,9 @@ ALM <- function(X){
 
 N_iter <- 1000 # quantidade de iterações simulações
 Tam <- 12  # período anual
-A0 <- 200304847 # Valor inicial do Ativo - colocar no mínimo o valor da RM0
-FC_r <- c(72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546, 72546) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
-RM_r_1 <- 227907246
+A0 <- 202714698 # Valor inicial do Ativo - colocar no mínimo o valor da RM0
+FC_r <- c(515632, 515632, 515632, 515632, 515632, 515632, 515632, 515632, 515632, 515632, 515632, 515632) # Fluxo de Caixa financeiro esperado de contribuições futuras - benefícios futuros
+RM_r_1 <- 232326306
 RM_r <- A0
 dif <- RM_r_1 - A0
 vet <- rep(dif/12, 13) # teste
@@ -427,7 +427,7 @@ otimizando@solution
 x <- otimizando@solution 
 obj <- ALM(x)
 obj
-
+solucao <- x
 # escrevendo resultados em .csv
 #solucao <- matrix(otimizando@solution, nrow = 12, byrow = TRUE)
 #colnames(solucao) <- names(Retorno[,-1])
@@ -487,7 +487,6 @@ otimizando@solution
 
 
 
-
 ################ Resultados e Gráficos ###################
 
 #### organizando os dados
@@ -521,13 +520,13 @@ COR <- cor(Retorno[,-1])
 COR_Chol <- chol(COR) 
 
 # array onde as linhas representam os meses, enquanto que as colunas são os ativos
-arrayteste <- array(NA, dim = c(12, 5, 100), dimnames = list(linhameses, colnames(Retorno[-1])))
+arrayteste <- array(NA, dim = c(12, 5, 1000), dimnames = list(linhameses, colnames(Retorno[-1])))
 
 # selecionando uma seed para manter a reprodutibilidade
 set.seed(1)
 
-# Simulação de Monte Carlo n=100
-for(j in seq(1,100)){
+# Simulação de Monte Carlo n=1000
+for(j in seq(1,1000)){
   for (i in seq(1,12)){
   vetorRandn <- rnorm(5)
   vetorCorrRandn <- vetorRandn * COR_Chol
@@ -563,6 +562,7 @@ print(R)
 X <- read.csv("solucao.csv", sep = "", header = F)
 print(X)
 #X <- otimizando@solution[1,]
+apply(X, 1, sum)
 
 # Matriz com os pesos iguais 
 X0_2 <- rep(0.2, 60)
