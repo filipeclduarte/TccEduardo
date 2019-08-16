@@ -59,6 +59,7 @@ Fundos_stats
 
 ##### Estatística por Ano 
 year(Fundos_long$data)
+
 Fundos_stats_Ano <- Fundos_long %>% 
   group_by(Ativos, year(Fundos_long$data)) %>% 
   summarise(N = n(), Mínimo = min(Retorno), Q25 = quantile(Retorno, 0.25), 
@@ -394,6 +395,12 @@ x1 <- rep(c(1,0,0,0,0), each = 12)
 ALM(x1)
 x2 <- rep(c(0.5,0.5,0,0,0), each = 12)
 ALM(x2)
+x3 <- rep(c(0.3334, 0.3333, 0.3333, 0, 0), each = 12)
+ALM(x3)
+x4 <- rep(c(0.3,0.3,0.3,0,0.1), each = 12)
+ALM(x4)
+x5 <- rep(c(0.2667, 0.26, 0.26, 0.2, 0), each = 12)
+ALM(x5)
 
 
 ############## Algoritmos Genéticos ##############
@@ -405,7 +412,7 @@ ALM(x2)
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
          upper = rep(c(1, 0.6, 0.4, 0.2, 0.1), each =  12), popSize = 200, 
-         maxiter = 10, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+         maxiter = 2, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
          keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
