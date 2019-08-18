@@ -411,8 +411,8 @@ ALM(x5)
 # máximo de iterações = 10 e tamanho da população = 600
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
-         upper = rep(c(1, 0.6, 0.4, 0.2, 0.1), each =  12), popSize = 200, 
-         maxiter = 2, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
+         upper = rep(c(1, 0.6, 0.4, 0.2, 0.1), each =  12), popSize = 2000, 
+         maxiter = 20, maxFitness = 0, names = rep(paste0('X', 1:5), each = 12),
          keepBest = TRUE, seed=12345)
 
 # apresentando os resultados 
@@ -436,6 +436,23 @@ solucao <- x
 #solucao
 #apply(round(solucao,1), 1, sum)
 write(solucao, file = "solucao.csv")
+
+# lendo solucao
+library(readxl)
+X01 <- read_excel("Pasta1.xlsx")
+X01 <- data.frame(sapply(X01, as.numeric))
+X01 <- gather(X01)
+X01 <- X01[,2]
+X01
+ALM(X01)
+
+X02 <- read_excel("Pasta2.xlsx")
+X02 <- data.frame(sapply(X02, as.numeric))
+X02 <- gather(X02)
+X02 <- X02[,2]
+X02
+ALM(X02)
+
 
 ## Testando com apenas dois ativos
 #otimizando <- ga(type = "real-valued", fitness = ALM, 
