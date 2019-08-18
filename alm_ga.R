@@ -131,14 +131,6 @@ Fundos_stats %>%
   scale_y_continuous(limits = c(0, 0.02)) +
   scale_x_continuous(limits = c(0, 0.07))
 
-ggplot(matriz_medias_dp, aes(x = vetor_dp, y = vetor_medias, color = Ativos)) +
-  geom_point(size = 5) +
-  theme_bw() + ggtitle("Risco-Retorno") +
-  xlab("Volatilidade") + ylab("Retorno") +
-  scale_y_continuous(limits = c(0, 0.015)) +
-  scale_x_continuous(limits = c(0, 0.08))
-
-
 
 ######## Retorno Acumulado ########
 ## Aplicando a função do retorno acumulado às colunas dos fundos
@@ -188,10 +180,6 @@ Retorno_Acumulado_long %>%
   geom_boxplot(aes(x = Ativos ,y = Retorno, fill = Ativos, color = Ativos), alpha = 0.5) +
   ggtitle("Box-Plot do Retorno Acumulado dos Fundos")+
   theme_bw()
-
-
-
-
 
 ################################ ALM ########################################
 #### Simulando ALM para todas os ativos usando a abordagem do trabalho de Amaral (2010)
@@ -376,19 +364,7 @@ X <- rep(0.5, 60)
 obj <- ALM(X)
 obj
 
-X <- rep(0, 60)
-obj <- ALM(X)
-obj
-
-X <- rep(0.1, 60)
-obj <- ALM(X)
-obj
-
-X <- c(rep(0.2,36),rep(0.1, 24))
-obj <- ALM(X)
-obj
 ##### OK
-
 
 # simulações de carteiras ingênuas
 x1 <- rep(c(1,0,0,0,0), each = 12)
@@ -402,13 +378,10 @@ ALM(x4)
 x5 <- rep(c(0.2667, 0.26, 0.26, 0.2, 0), each = 12)
 ALM(x5)
 
-
 ############## Algoritmos Genéticos ##############
-### gerando a sugestão
-#X <- c(rep(0.2,36),rep(0.1, 24))
 
 ### Implementando o algoritmo genético com o mínimo e o máximo de alocação para cada ativo
-# máximo de iterações = 10 e tamanho da população = 600
+# máximo de iterações = 20 e tamanho da população = 2000
 otimizando <- ga(type = "real-valued", fitness = ALM, 
          lower = rep(c(0, 0, 0, 0, 0), each = 12), 
          upper = rep(c(1, 0.6, 0.4, 0.2, 0.1), each =  12), popSize = 2000, 
@@ -428,13 +401,6 @@ x <- otimizando@solution
 obj <- ALM(x)
 obj
 solucao <- x
-# escrevendo resultados em .csv
-#solucao <- matrix(otimizando@solution, nrow = 12, byrow = TRUE)
-#colnames(solucao) <- names(Retorno[,-1])
-#linhameses <- c("jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez")
-#rownames(solucao) <- linhameses
-#solucao
-#apply(round(solucao,1), 1, sum)
 write(solucao, file = "solucao.csv")
 
 # lendo solucao
@@ -576,13 +542,14 @@ print(R)
 
 # Matriz com os pesos otimizados pelo Algoritmos Genéticos com o objetivo de reduzir a Probabilidade de Insolvência (Ruína)
 
-X <- read.csv("solucao.csv", sep = "", header = F)
-print(X)
-#X <- otimizando@solution[1,]
-apply(X, 1, sum)
+#X <- read.csv("solucao.csv", sep = "", header = F)
+#print(X)
+X <- X01
+#apply(X, 1, sum)
 
 # Matriz com os pesos iguais 
-X0_2 <- rep(0.2, 60)
+#X0_2 <- rep(0.2, 60)
+X2 <- x5
 
 ## Retorno do carteira otimizado pelos GA
 RX <- R*X
@@ -595,7 +562,7 @@ Rport$mes
 Rport
 
 ## Retorno da carteira com pesos iguais
-RX0_2 <- R*X0_2
+RX0_2 <- R*X2
 Rport0_2 <- apply(RX0_2, 1, sum)
 Rport0_2 <- unname(Rport0_2)
 Rport0_2
